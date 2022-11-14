@@ -2,6 +2,7 @@ package com.example.preguntasapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlertDialog;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
@@ -61,10 +62,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         Button clickedButton = (Button) view;
         if(clickedButton.getId()==R.id.submit_btn){
-            currentQuestionIndex++;
-            loadNewQuestion();
             if(selectedAnswer.equals(QuestionAnswer.correctAnswers[currentQuestionIndex])){
                 score++;
+            currentQuestionIndex++;
+            loadNewQuestion();
+
             }
 
 
@@ -78,11 +80,40 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     void loadNewQuestion(){
+
+        if(currentQuestionIndex == totalQuestion){
+            finishQuiz();
+            return;
+        }
+
         questionTextView.setText(QuestionAnswer.question[currentQuestionIndex]);
         ansA.setText(QuestionAnswer.choices[currentQuestionIndex][0]);
         ansB.setText(QuestionAnswer.choices[currentQuestionIndex][1]);
         ansC.setText(QuestionAnswer.choices[currentQuestionIndex][2]);
         ansD.setText(QuestionAnswer.choices[currentQuestionIndex][3]);
     }
+
+    void finishQuiz(){
+        String passStatus = "";
+        if (score > totalQuestion*0.60){
+            passStatus = "Joyadura maxima";
+        }else{
+            passStatus = "Mmm not joyadura";
+        }
+
+        new AlertDialog.Builder(this)
+                .setTitle(passStatus)
+                .setMessage("Tu score es "+ score+"de "+ totalQuestion)
+                .setPositiveButton("Reiniciar",(dialogInterface, i) -> restartQuiz() )
+                .setCancelable(false)
+                .show();
+    }
+
+    void restartQuiz(){
+        score = 0;
+        currentQuestionIndex = 0;
+        loadNewQuestion();
+    }
+
 }
 
